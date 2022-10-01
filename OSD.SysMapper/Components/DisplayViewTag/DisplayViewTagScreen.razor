@@ -1,0 +1,81 @@
+﻿@inject IViewTagRepository ViewTagRepository
+@inject NavigationManager NavigationManager
+
+
+<SearchBar OnSearch="HandleSearch" Title="Search Organization Unit">
+
+</SearchBar>
+<br/>
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>CategoryId</th>
+            <th>CategoryName</th>
+            <th>LifeCycleId</th>
+            <th>LifeCycleName</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (list != null && list.Count() > 0)
+        {
+            foreach (var v in list)
+            {
+                <DisplayViewTagList item="v"></DisplayViewTagList>
+            }
+            
+        }
+        else
+        {
+            <tr>
+                <td colspan="8">Cannot find product</td>
+            </tr>
+        }
+
+    </tbody>
+</table>
+ 
+
+ 
+
+
+<br/>
+<button 
+    type="button" 
+    class="btn btn-primary"
+        @onclick="AddLabel">Add Label
+</button>
+@code {
+
+    private IEnumerable<VTag> list;
+
+    protected override  void OnInitialized()
+    {
+        base.OnInitialized();
+        list = ViewTagRepository.GetAll();
+         
+
+    }
+    private   void HandleSearch(string filter)
+    {
+
+        Console.WriteLine("filter c = " + filter.Count());
+        Console.WriteLine("filter s = " + filter);
+        if (filter.Count() > 0 ) {
+            Console.WriteLine("Running SearchAsync" );
+            list = ViewTagRepository.Search(filter);
+        } else {
+            Console.WriteLine("Running GetAllAsync");
+            list = ViewTagRepository.GetAll();
+        }
+        
+        
+        
+    }
+    private void AddLabel()
+    {
+        NavigationManager.NavigateTo("/addLabel");
+    }
+}

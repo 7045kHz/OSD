@@ -1,0 +1,53 @@
+﻿@inject ICategoryRepository CategoryRepository
+@using Microsoft.Extensions.Logging
+@inject ILogger<Category> Logger
+
+
+<EditForm Model="@exampleModel" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+   <ValidationSummary />
+    <InputSelect id="category" @bind-Value="rSelectedCategoryId">
+        @foreach (var v in Categories)
+        {
+            <option value="@v.CategoryId">@v.Name</option>
+        }
+    </InputSelect>
+ </EditForm>
+<p>Value from InputSelectCategory: </p>@rSelectedCategoryId
+
+@code {
+    [Parameter]
+    public string SearchName { get; set; } = string.Empty;
+    [Parameter]
+    public int SearchId { get; set; } = -1;
+    public string rSelectedCategoryId = string.Empty;
+    private Category exampleModel = new Category();
+    public List<Category> Categories { get; set; } = new List<Category>();
+ 
+    protected async override Task OnInitializedAsync()
+    {
+
+        if (string.IsNullOrEmpty(SearchName) &&  SearchId == -1)
+        {
+            Categories = (await CategoryRepository.GetAllAsync()).ToList();
+        }
+        else if (string.IsNullOrEmpty(SearchName) && SearchId != -1 )
+        {
+            Categories = (await CategoryRepository.SearchAsync(SearchId)).ToList();
+
+        }
+        else 
+        {
+            Categories = (await CategoryRepository.SearchAsync(SearchName)).ToList();
+         }
+
+
+    }
+    private void HandleValidSubmit()
+    {
+        Logger.LogInformation("HandleValidSubmit called");
+        Console.WriteLine("HandelSearch: " + Categories);
+
+        // Process the valid form
+    }
+}

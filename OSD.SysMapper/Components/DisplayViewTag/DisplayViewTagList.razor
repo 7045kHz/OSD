@@ -1,0 +1,37 @@
+﻿@inject NavigationManager NavigationManager
+
+@if (item != null)
+{
+
+        <tr>
+        <td>@item.TagId</td>
+        <td>@item.Name</td>
+        <td>@item.CategoryId</td>
+        <td>@item.CategoryName</td>
+        <td>@item.LifeCycleId</td>
+        <td>@item.LifeCycleName</td>
+
+
+
+            <td>
+                <button type="button" class="btn btn-light"
+                @onclick="@(() => EditLabel(item.TagId))">
+                    Edit
+                </button>
+            </td>
+        </tr>
+    
+} else {
+    <tr>
+        <td colspan="3">No Data Found</td>
+    </tr>
+}
+
+@code {
+    [Parameter]
+    public VTag item { get; set; }
+    private void EditLabel(int ID)
+    {
+        NavigationManager.NavigateTo($"/ouEdit/{ID}");
+    }
+}

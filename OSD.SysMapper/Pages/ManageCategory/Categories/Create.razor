@@ -1,0 +1,32 @@
+﻿@page "/categoryCreate"
+@using OSD.SysMapper.Components.Category.DisplayViewCategory
+
+<CreateCategory></CreateCategory>
+ 
+@if (!isVisable) {
+    <bk/>
+    <button     
+        type="button" 
+        class="btn btn-link"
+        @onclick="toggleViewCategory">
+        <i class="fa fa-bars" aria-hidden="true"></i>| Display Existing Categories
+    </button>
+}
+
+@if (isVisable)
+{
+    <bk />
+    <button 
+        type="button" 
+        class="btn btn-link"
+        @onclick="toggleViewCategory">
+        <i class="fa fa-bars" aria-hidden="true"></i>| Hide Existing Categories
+    </button>
+    <DisplayViewCategoryScreen></DisplayViewCategoryScreen>
+}
+@code {
+    private bool isVisable = false;
+    private void toggleViewCategory() {
+        this.isVisable = !this.isVisable;
+    }
+}

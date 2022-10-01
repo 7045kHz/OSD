@@ -1,0 +1,83 @@
+﻿ 
+@inject IViewOuRepository ViewOuRepository
+@inject NavigationManager NavigationManager
+
+
+<SearchBar OnSearch="HandleSearch" Title="Search Organization Unit">
+
+</SearchBar>
+<br/>
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Organization</th>
+            <th>Team</th>
+            <th>LifeCycleId</th>
+            <th>LifeCycleName</th>
+            <th>CategoryId</th>
+            <th>CategoryName</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (list != null && list.Count() > 0)
+        {
+            foreach (var v in list)
+            {
+                <DisplayViewOuList item="v"></DisplayViewOuList>
+            }
+            
+        }
+        else
+        {
+            <tr>
+                <td colspan="8">Cannot find product</td>
+            </tr>
+        }
+
+    </tbody>
+</table>
+ 
+
+ 
+
+
+<br/>
+<button 
+    type="button" 
+    class="btn btn-primary"
+        @onclick="AddLabel">Add Label
+</button>
+@code {
+
+    private IEnumerable<VOu> list;
+
+    protected override  void OnInitialized()
+    {
+        base.OnInitialized();
+        list = ViewOuRepository.GetAll();
+         
+
+    }
+    private   void HandleSearch(string filter)
+    {
+
+        Console.WriteLine("filter c = " + filter.Count());
+        Console.WriteLine("filter s = " + filter);
+        if (filter.Count() > 0 ) {
+            Console.WriteLine("Running SearchAsync" );
+            list = ViewOuRepository.Search(filter);
+        } else {
+            Console.WriteLine("Running GetAllAsync");
+            list = ViewOuRepository.GetAll();
+        }
+        
+        
+        
+    }
+    private void AddLabel()
+    {
+        NavigationManager.NavigateTo("/addLabel");
+    }
+}
