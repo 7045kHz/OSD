@@ -1,0 +1,79 @@
+﻿@inject IViewLifeCycleRepository ViewLifeCycleRepository
+@inject NavigationManager NavigationManager
+
+
+<SearchBar OnSearch="HandleSearch" Title="Search Organization Unit">
+
+</SearchBar>
+<br/>
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>CategoryId</th>
+            <th>CategoryName</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (list != null && list.Count() > 0)
+        {
+            foreach (var v in list)
+            {
+                <DisplayViewLifeCycleList item="v"></DisplayViewLifeCycleList>
+            }
+            
+        }
+        else
+        {
+            <tr>
+                <td colspan="8">Cannot find product</td>
+            </tr>
+        }
+
+    </tbody>
+</table>
+ 
+
+ 
+
+
+<br/>
+<button 
+    type="button" 
+    class="btn btn-primary"
+        @onclick="AddLabel">Add Label
+</button>
+@code {
+
+    private IEnumerable<VLifeCycle> list;
+
+    protected override  void OnInitialized()
+    {
+        base.OnInitialized();
+        list = ViewLifeCycleRepository.GetAll();
+         
+
+    }
+    private   void HandleSearch(string filter)
+    {
+
+        Console.WriteLine("filter c = " + filter.Count());
+        Console.WriteLine("filter s = " + filter);
+        if (filter.Count() > 0 ) {
+            Console.WriteLine("Running SearchAsync" );
+            list = ViewLifeCycleRepository.Search(filter);
+        } else {
+            Console.WriteLine("Running GetAllAsync");
+            list = ViewLifeCycleRepository.GetAll();
+        }
+        
+        
+        
+    }
+    private void AddLabel()
+    {
+        NavigationManager.NavigateTo("/addLabel");
+    }
+}

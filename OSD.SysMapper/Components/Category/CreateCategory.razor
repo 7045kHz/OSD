@@ -1,0 +1,95 @@
+﻿@inject ILifeCycleRepository LifeCycleRepository
+@inject ICategoryRepository CategoryRepository
+@using Microsoft.Extensions.Logging
+
+<div class="form-group">
+<EditForm Model="@exampleModel" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+   <ValidationSummary />
+   <div class="form-group row">
+        <div class="col form-group col-md-4">
+                <label  >
+                            Enter Category Name:&nbsp;
+                    <InputText @bind-Value="exampleModel.Name"></InputText>
+                </label>
+        </div>
+        <div class="col form-group col-md-4">
+                <label  >
+                    Select Lifecycle:&nbsp;
+                        <InputSelect  id="lifecycle" @bind-Value="rSelectedCategoryId">
+                        @if (string.IsNullOrEmpty(rSelectedCategoryId ))
+                        {
+                            <option value="" >- Please Select -</option>
+                        }
+             
+                        @foreach (var v in LifeCycles)
+                            {
+                                <option value="@v.LifeCycleId">@v.Name</option>
+                            }
+                        }
+
+                    </InputSelect>
+                </label>
+        </div>
+ 
+    
+   </div>
+   <button type="submit">Submit</button>
+ </EditForm>
+ </div>
+
+@code {
+    [Parameter]
+    public string SearchName { get; set; } = string.Empty;
+    [Parameter]
+    public int SearchId { get; set; } = -1;
+
+    public string rSelectedCategoryId = string.Empty;
+    public List<LifeCycle> LifeCycles { get; set; } = new List<LifeCycle>();
+
+    private int NameExists { get; set; } = 2;
+    private Category exampleModel = new Category();
+    
+
+    protected async override Task OnInitializedAsync()
+    {
+
+        if (string.IsNullOrEmpty(SearchName) &&  SearchId == -1)
+        {
+            LifeCycles = (await LifeCycleRepository.GetAllAsync()).ToList();
+        }
+        else if (string.IsNullOrEmpty(SearchName) && SearchId != -1 )
+        {
+            LifeCycles = (await LifeCycleRepository.SearchAsync(SearchId)).ToList();
+
+        }
+        else 
+        {
+            LifeCycles = (await LifeCycleRepository.SearchAsync(SearchName)).ToList();
+        }
+
+
+    }
+    private void HandleValidSubmit()
+    {
+
+        exampleModel.LifeCycleId = Int32.Parse(rSelectedCategoryId);
+        NameExists = CategoryRepository.NameExists(exampleModel.Name.ToString());
+ 
+
+        if (NameExists < 1 )
+        {
+           CategoryRepository.Add(exampleModel);
+            Console.WriteLine("Does not exist - Will create: " + NameExists);
+
+        }
+        else {
+            Console.WriteLine("Name exists - not creating: " + NameExists);
+        }
+          
+        
+        
+        Console.WriteLine("Catagory ID: " + exampleModel.CategoryId);
+        // Process the valid form
+    }
+}

@@ -1,0 +1,39 @@
+﻿@inject NavigationManager NavigationManager
+
+@if (item != null)
+{
+
+        <tr>
+        <td>@item.LabelMapId</td>
+
+        <td>@item.LifeCycleId</td>
+        <td>@item.LifeCycleName</td>
+        <td>@item.CategoryId</td>
+        <td>@item.CategoryName</td>
+        <td>@item.TagId</td>
+        <td>@item.TagName</td>
+
+
+
+            <td>
+                <button type="button" class="btn btn-light"
+                @onclick="@(() => EditLabel(item.LabelMapId))">
+                    Edit
+                </button>
+            </td>
+        </tr>
+    
+} else {
+    <tr>
+        <td colspan="3">No Data Found</td>
+    </tr>
+}
+
+@code {
+    [Parameter]
+    public VLabelMap item { get; set; }
+    private void EditLabel(int ID)
+    {
+        NavigationManager.NavigateTo($"/ouEdit/{ID}");
+    }
+}

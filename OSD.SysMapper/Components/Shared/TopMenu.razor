@@ -1,0 +1,164 @@
+﻿@inherits LayoutComponentBase
+
+<nav class="navbar navbar-expand-lg navbar-light bg-dark navbar-dark  w-100">
+    <a class="navbar-brand" href="#">
+        <img src="/Images/bootstrap-logo-shadow.png" width="30" height="30" alt="">
+    </a>
+    <a class="navbar-brand" href="#">OSD.SysMapper</a>
+    <button @onclick="@(()=>OnClickMenu("navbar-toggler"))" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="@NavMenuCssCollapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item dropdown" @onclick:preventDefault="true" @onclick="@(()=> OnClickMenu("dropdown-1"))">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Models
+                </a>
+                @if (expandNavDropdown1)
+                {
+                    <ul class="dropdown-menu show" aria-labelledby="navbarDropdown">
+                        <li class="nav-item" @onclick:stopPropagation="true" @onclick="@(()=> OnClickMenu("nav-item"))">
+                            <NavLink class="dropdown-item" href="identityDesign">
+                                <span class="oi oi-home" aria-hidden="true"></span> Identity Design
+                            </NavLink>
+                        </li>
+                        <li class="nav-item" @onclick:stopPropagation="true" @onclick="@(()=> OnClickMenu("nav-item"))">
+                            <NavLink class="dropdown-item" href="cleanArchitecture">
+                                <span class="oi oi-home" aria-hidden="true"></span> Clean Architecture
+                            </NavLink>
+                        </li>
+
+                    </ul>
+                }
+            </li>
+
+
+
+
+            <AuthorizeView Roles="admin">
+                <li class="nav-item px-3" @onclick="@(()=> OnClickMenu("nav-item"))">
+                    <NavLink class="nav-link" href="svcs">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Kubernetes Services
+                    </NavLink>
+                </li>
+                <li class="nav-item dropdown" @onclick:preventDefault="true" @onclick="@(()=> OnClickMenu("dropdown-2"))">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Tools
+                    </a>
+                    @if (expandNavDropdown2)
+                    {
+                        <ul class="dropdown-menu show" aria-labelledby="navbarDropdown">
+                            <li class="nav-item" @onclick:stopPropagation="true" @onclick="@(()=> OnClickMenu("nav-item"))">
+                                <NavLink class="dropdown-item" href="fileInput">
+                                    <span class="oi oi-home" aria-hidden="true"></span> File Input
+                                </NavLink>
+                            </li>
+                            <li class="nav-item " @onclick:stopPropagation="true" @onclick="@(()=> OnClickMenu("nav-item"))">
+                                <NavLink class="dropdown-item" href="dragdrop-viewer">
+                                    <span class="oi oi-home" aria-hidden="true"></span> File DragDrop
+                                </NavLink>
+                            </li>
+ 
+                        </ul>
+                    }
+                </li>
+                <li class="nav-item dropdown" @onclick:preventDefault="true" @onclick="@(()=> OnClickMenu("dropdown-3"))">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Configuration
+                    </a>
+                    @if (expandNavDropdown3)
+                    {
+                        <ul class="dropdown-menu show" aria-labelledby="navbarDropdown">
+
+                            <li class="nav-item" @onclick:stopPropagation="true" @onclick="@(()=> OnClickMenu("nav-item"))">
+                                <NavLink class="dropdown-item" href="lifecycleIndex">
+                                    <span class="oi oi-home" aria-hidden="true"></span> Lifecycles
+                                </NavLink>
+                            </li>
+                            <li class="nav-item" @onclick:stopPropagation="true" @onclick="@(()=> OnClickMenu("nav-item"))">
+                                <NavLink class="dropdown-item" href="resourcemapIndex">
+                                    <span class="oi oi-home" aria-hidden="true"></span> Resource Maps
+                                </NavLink>
+                            </li>
+                            <li class="nav-item" @onclick:stopPropagation="true" @onclick="@(()=> OnClickMenu("nav-item"))">
+                                <NavLink class="dropdown-item" href="resourcetypeIndex">
+                                    <span class="oi oi-home" aria-hidden="true"></span> Resource Types
+                                </NavLink>
+                            </li>
+
+                            <li class="nav-item" @onclick:stopPropagation="true" @onclick="@(()=> OnClickMenu("nav-item"))">
+                                <NavLink class="dropdown-item" href="labelmapIndex">
+                                    <span class="oi oi-home" aria-hidden="true"></span> Label Maps
+                                </NavLink>
+                            </li>
+                            <li class="nav-item" @onclick:stopPropagation="true" @onclick="@(()=> OnClickMenu("nav-item"))">
+                                <NavLink class="dropdown-item" href="labeltypeIndex">
+                                    <span class="oi oi-home" aria-hidden="true"></span> Label Types
+                                </NavLink>
+                            </li>
+ 
+                            <li class="nav-item" @onclick:stopPropagation="true" @onclick="@(()=> OnClickMenu("nav-item"))">
+                                <NavLink class="dropdown-item" href="categoryIndex">
+                                    <span class="oi oi-home" aria-hidden="true"></span> Categories
+                                </NavLink>
+                            </li>
+                            <li class="nav-item" @onclick:stopPropagation="true" @onclick="@(()=> OnClickMenu("nav-item"))">
+                                <NavLink class="dropdown-item" href="ouIndex">
+                                    <span class="oi oi-home" aria-hidden="true"></span> Organizational Units
+                                </NavLink>
+                            </li>
+                            <li class="nav-item" @onclick:stopPropagation="true" @onclick="@(()=> OnClickMenu("nav-item"))">
+                                <NavLink class="dropdown-item" href="tagIndex">
+                                    <span class="oi oi-home" aria-hidden="true"></span> Tags
+                                </NavLink>
+                            </li>
+                        </ul>
+                    }
+                </li>
+            </AuthorizeView>
+
+        </ul>
+        <LoginDisplay></LoginDisplay>
+
+    </div>
+</nav>
+
+@code {
+    bool collapseNavMenu = true;
+    string NavMenuCssCollapse => "navbar-collapse" + (collapseNavMenu ? " collapse" : "");
+
+    bool expandNavDropdown1;
+    bool expandNavDropdown2;
+    bool expandNavDropdown3;
+
+    void OnClickMenu(string className)
+    {
+        switch (className)
+        {
+            case "navbar-toggler":
+                collapseNavMenu = !collapseNavMenu;
+                break;
+            case "dropdown-1":
+                expandNavDropdown1 = !expandNavDropdown1;
+                expandNavDropdown2 = false;
+                expandNavDropdown3 = false;
+                break;
+            case "dropdown-2":
+                expandNavDropdown2 = !expandNavDropdown2;
+                expandNavDropdown1 = false;
+                expandNavDropdown3 = false;
+                break;
+            case "dropdown-3":
+                expandNavDropdown3 = !expandNavDropdown2;
+                expandNavDropdown1 = false;
+                expandNavDropdown2 = false;
+                break;
+            case "nav-item":
+                expandNavDropdown1 = false;
+                expandNavDropdown2 = false;
+                expandNavDropdown3 = false;
+                break;
+        }
+    }
+}
