@@ -13,8 +13,12 @@ namespace OSD.RazorData.Models.SysMapper.Tables
         [DisplayName("Enter Name: ")]
         [StringLength(256, ErrorMessage = "Name is too long.")]
         public string Name { get; set; }
-        public int? CategoryId { get; set; }
-        public int? LifeCycleId { get; set; }
+        [Required(ErrorMessage = "CategoryId is Required")]
+        public int CategoryId { get; set; }
+        [Required(ErrorMessage = "LifeCycleId is Required")]
+        public int LifeCycleId { get; set; }
+        [Required(ErrorMessage = "OuId is Required")]
+        public int OuId { get; set; }
 
         public virtual Category Category { get; set; }
         public virtual LifeCycle LifeCycle { get; set; }

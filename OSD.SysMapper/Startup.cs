@@ -58,6 +58,8 @@ namespace OSD.SysMapper
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ILifeCycleRepository, LifeCycleRepository>();
             services.AddScoped<IStoredProcedures, StoredProcedures>();
+            services.AddScoped<IOuRepository, OuRepository>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

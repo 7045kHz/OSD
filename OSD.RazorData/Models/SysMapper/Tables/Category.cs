@@ -22,9 +22,10 @@ namespace OSD.RazorData.Models.SysMapper.Tables
         public int CategoryId { get; set; }
         [Required]
         public int LifeCycleId { get; set; }
+ 
         [Required(ErrorMessage = "Name is Required")]
         [DisplayName("Enter Category Name: ")]
-        [StringLength(4000, ErrorMessage = "Name is too long.")]
+        [StringLength(256, ErrorMessage = "Name is too long.")]
         public string Name { get; set; }
 
         public virtual LifeCycle LifeCycle { get; set; }
