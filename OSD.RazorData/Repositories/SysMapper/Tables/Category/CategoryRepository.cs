@@ -108,6 +108,16 @@ namespace OSD.RazorData.Repositories.SysMapper.Tables
                 return results.ToList();
             }
         }
+        public async Task<List<Category>> GetAllAsyncOrder(int skip, int take, string orderBy, string direction = "DESC")
+        {
+            using (var cnn = new SqlConnection(ConnectionString))
+            {
+                IEnumerable<Category> list = await cnn.QueryAsync<Category>($"select * from [dbo].[Category] ORDER BY {orderBy} {direction} OFFSET {skip} ROWS FETCH NEXT {take} ROWS ONLY; ", null, commandType: CommandType.Text);
+                return list.ToList();
+            }
+
+        }
+
         public async Task<List<Category>> SearchAsync(int searchId)
         {
             using (var cnn = new SqlConnection(ConnectionString))

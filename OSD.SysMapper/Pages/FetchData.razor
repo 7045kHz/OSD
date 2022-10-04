@@ -25,6 +25,7 @@ else
         <tbody>
             @foreach (var forecast in forecasts)
             {
+
                 <tr>
                     <td>@forecast.Date.ToShortDateString()</td>
                     <td>@forecast.TemperatureC</td>
@@ -33,14 +34,25 @@ else
                 </tr>
             }
         </tbody>
+
     </table>
+    @for (int p = 1; p <= forecasts.Count() / pageSize; p++)
+    {
+        <button type="button" @onclick="(e=>HandleChangePage(p))">@p</button>
+    }
 }
 
 @code {
     private WeatherForecast[] forecasts;
-
+     private int pageSize = 2;
+    private int pageNumber = 1;
     protected override async Task OnInitializedAsync()
     {
         forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
+    }
+    void HandleChangePage(int p)
+    {
+        pageNumber = p;
+        var page = forecasts.Skip((p - 1) * pageSize).Take(pageSize);
     }
 }

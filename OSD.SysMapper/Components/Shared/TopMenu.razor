@@ -38,6 +38,11 @@
 
             <AuthorizeView Roles="admin">
                 <li class="nav-item px-3" @onclick="@(()=> OnClickMenu("nav-item"))">
+                    <NavLink class="nav-link" href="fetchdata">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch Data
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3" @onclick="@(()=> OnClickMenu("nav-item"))">
                     <NavLink class="nav-link" href="svcs">
                         <span class="oi oi-list-rich" aria-hidden="true"></span> Kubernetes Services
                     </NavLink>

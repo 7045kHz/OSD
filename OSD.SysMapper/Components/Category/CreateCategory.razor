@@ -1,6 +1,6 @@
 ﻿@inject ILifeCycleRepository LifeCycleRepository
 @inject ICategoryRepository CategoryRepository
-@inject IOuRepository OuRepository
+
 @using Microsoft.Extensions.Logging
 
 <div class="form-group">
@@ -14,42 +14,27 @@
                     <InputText @bind-Value="exampleModel.Name"></InputText>
                 </label>
         </div>
-        <div class="col form-group col-md-4">
-                <label  >
-                    Select Lifecycle:&nbsp;
-                        <InputSelect  id="lifecycle" @bind-Value="rSelectedCategoryId">
-                        @if (string.IsNullOrEmpty(rSelectedCategoryId ))
-                        {
-                            <option value="" >- Please Select -</option>
-                        }
-             
-                        @foreach (var v in LifeCycles)
-                            {
-                                <option value="@v.LifeCycleId">@v.Name</option>
-                            }
-                        }
-
-                    </InputSelect>
-                </label>
         </div>
+        <div class="form-group row">
             <div class="col form-group col-md-4">
-                <label>
-                    Select Organization:&nbsp;
-                    <InputSelect id="lifecycle" @bind-Value="rOUId">
-                        @if (string.IsNullOrEmpty(rOUId))
-                        {
-                            <option value="">- Please Select -</option>
-                        }
+                    <label  >
+                        Select Lifecycle:&nbsp;
+                            <InputSelect  id="lifecycle" @bind-Value="rSelectedCategoryId">
+                            @if (string.IsNullOrEmpty(rSelectedCategoryId ))
+                            {
+                                <option value="" >- Please Select -</option>
+                            }
+             
+                            @foreach (var v in LifeCycles)
+                                {
+                                    <option value="@v.LifeCycleId">@v.Name</option>
+                                }
+                            }
 
-                        @foreach (var v in Organization)
-                        {
-                            <option value="@v.OuId">@v.Organization - @v.Team</option>
-                        }
-                        }
-
-                    </InputSelect>
-                </label>
+                        </InputSelect>
+                    </label>
             </div>
+            
     
    </div>
    <button type="submit">Submit</button>
@@ -65,8 +50,7 @@
     public string rSelectedCategoryId = string.Empty;
     public List<LifeCycle> LifeCycles { get; set; } = new List<LifeCycle>();
 
-    public string rOUId = string.Empty;
-    public List<Ou> Organization { get; set; } = new List<Ou>();
+ 
 
     private int NameExists { get; set; } = 2;
     private Category exampleModel = new Category();
@@ -89,19 +73,7 @@
             LifeCycles = (await LifeCycleRepository.SearchAsync(SearchName)).ToList();
         }
 
-        if (string.IsNullOrEmpty(SearchName) && SearchId == -1)
-        {
-            Organization = (await OuRepository.GetAllAsync()).ToList();
-        }
-        else if (string.IsNullOrEmpty(SearchName) && SearchId != -1)
-        {
-            Organization = (await OuRepository.SearchAsync(SearchId)).ToList();
-
-        }
-        else
-        {
-            Organization = (await OuRepository.SearchAsync(SearchName)).ToList();
-        }
+ 
     }
     private void HandleValidSubmit()
     {

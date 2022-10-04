@@ -33,7 +33,7 @@ namespace OSD.RazorData.Repositories.SysMapper.Tables
                 try
                 {
                     var sql = "INSERT INTO [dbo].[OU] (Team,Organization,CategoryId, LifeCycleId)  VALUES (@Team,@Organization,@CategoryId, @LifeCycleId); "
-    + "SELECT CAST(SCOPE_IDENTITY() as int);";
+                            + "SELECT CAST(SCOPE_IDENTITY() as int);";
                     var id = cnn.Query<int>(sql, v).Single();
                     v.OuId = id;
                     return v;

@@ -7,6 +7,7 @@ namespace OSD.RazorData.Repositories.SysMapper.Tables
     public interface ICategoryRepository
     {
         string ConnectionString { get; set; }
+        Task<List<Category>> GetAllAsyncOrder(int skip, int take, string orderBy, string direction  );
 
         Category Add(Category category);
         Category Find(int id);

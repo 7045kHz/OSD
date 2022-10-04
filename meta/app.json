@@ -1,0 +1,18 @@
+{
+  "name": "Rad",
+  "generator": "@radzen/blazor-server",
+  "theme": "dark",
+  "logo": "",
+  "pages": [],
+  "layouts": [
+    "Login",
+    "Main"
+  ],
+  "startPage": null,
+  "https": false,
+  "navigation": [],
+  "dataSources": [],
+  "serverProject": true,
+  "serverVersion": "6",
+  "serverLang": "cs"
+}
