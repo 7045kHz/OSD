@@ -84,9 +84,8 @@
     {
         base.OnInitialized();
         list = ViewCategoryRepository.GetAll();
-
-
     }
+
     protected override async Task OnInitializedAsync()
     {
         pagerSize = 3;
@@ -109,23 +108,20 @@
         this.StateHasChanged();
     }
 
+
     private   async void HandleSearch(string filter)
     {
         if (string.IsNullOrEmpty(filter))
         {
             totalRecords = ViewCategoryRepository.Count();
-
             list = await ViewCategoryRepository.GetAllAsyncOrder((curPage - 1) * pageSize, pageSize, sortColumnName, sortDir);
             searchString = string.Empty;
-
         }
         else
         {
             totalRecords = ViewCategoryRepository.Count(filter);
-
             list = await ViewCategoryRepository.GetAllAsyncOrder((curPage - 1) * pageSize, pageSize, sortColumnName, sortDir, filter);
             searchString = filter;
-
         }
         totalPages = (int)Math.Ceiling(totalRecords / (decimal)pageSize);
         endPage = totalPages;
@@ -133,9 +129,6 @@
     }
 
   
-
-
-
 
     private void SortTable(string columnName)
     {
@@ -159,6 +152,7 @@
         }
     }
 
+
     private string SetSortIcon(string columnName)
     {
         if (activeSortColumn != columnName)
@@ -174,6 +168,8 @@
             return "fa-sort-down";
         }
     }
+
+
     public void SetPagerSize(string direction)
     {
         if (direction == "forward" && endPage < totalPages)
@@ -195,6 +191,8 @@
             startPage = startPage - pagerSize;
         }
     }
+
+
     public async Task refreshRecords(int currentPage )
     {
       if (string.IsNullOrEmpty(searchString))
@@ -206,6 +204,8 @@
         curPage = currentPage;
         this.StateHasChanged();
     }
+
+
     public async Task NavigateToPage(string direction )
     {
         if (direction == "next")
