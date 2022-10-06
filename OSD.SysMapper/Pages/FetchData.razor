@@ -1,58 +1,49 @@
-﻿@page "/fetchdata"
+﻿@page "/datalist2"
+@inject IViewCategoryRepository ViewCategoryRepository
 
-@using OSD.SysMapper.Data
-@inject WeatherForecastService ForecastService
-
-<h1>Weather forecast</h1>
-
-<p>This component demonstrates fetching data from a service.</p>
-
-@if (forecasts == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
-                <th>Summary</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var forecast in forecasts)
-            {
-
-                <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
-                </tr>
-            }
-        </tbody>
-
-    </table>
-    @for (int p = 1; p <= forecasts.Count() / pageSize; p++)
-    {
-        <button type="button" @onclick="(e=>HandleChangePage(p))">@p</button>
-    }
-}
+<h3 class="mt-4">Example Datagrid using Radzen Blator Components</h3>
+<RadzenDataGrid TItem="VCategory" Data="@data"AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Center" AllowSorting="true" 
+    PageSizeOptions="@pageSizeOptions" ShowPagingSummary="@showPagerSummary" PagingSummaryFormat="@pagingSummaryFormat" Page="@OnPage">
+    <EmptyTemplate>
+        <p style="color: lightgrey; font-size: 24px; text-align: center; margin: 2rem;">No records to display.</p>
+    </EmptyTemplate>
+    <Columns>
+        <RadzenDataGridColumn TItem="VCategory" Property="CategoryId" Title="Category ID"  TextAlign="TextAlign.Center" />
+        <RadzenDataGridColumn TItem="VCategory" Property="Name" Title="Category Name" />
+        <RadzenDataGridColumn TItem="VCategory" Property="LifeCycleId" Title="LifeCycle ID" />
+        <RadzenDataGridColumn TItem="VCategory" Property="LifeCycleName" Title="LifeCycle Name" />
+    </Columns>
+</RadzenDataGrid>
 
 @code {
-    private WeatherForecast[] forecasts;
-     private int pageSize = 2;
-    private int pageNumber = 1;
-    protected override async Task OnInitializedAsync()
+    IEnumerable<int> pageSizeOptions = new int[] { 5, 10, 20, 30 };
+    string pagingSummaryFormat = "Displaying page {0} of {1} (total {2} records)";
+
+    bool showPagerSummary = true;
+    RadzenDataGrid<VCategory> dataGrid;
+
+    async Task FirstPage()
     {
-        forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
+        await dataGrid.FirstPage();
     }
-    void HandleChangePage(int p)
+    async Task TenthPage()
     {
-        pageNumber = p;
-        var page = forecasts.Skip((p - 1) * pageSize).Take(pageSize);
+        await dataGrid.GoToPage(9);
+    }
+    async Task LastPage()
+    {
+        await dataGrid.LastPage();
+    }
+    string emptyText = "No Items to display!";
+   // List<Category> data = new List<Category>();
+    private IEnumerable<VCategory> data;
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        data = ViewCategoryRepository.GetAll();
+    }
+    void OnPage(PagerEventArgs args)
+    {
+        //
     }
 }

@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Radzen;
 
 namespace OSD.SysMapper
 {
@@ -59,7 +60,10 @@ namespace OSD.SysMapper
             services.AddScoped<ILifeCycleRepository, LifeCycleRepository>();
             services.AddScoped<IStoredProcedures, StoredProcedures>();
             services.AddScoped<IOuRepository, OuRepository>();
-
+            services.AddScoped<DialogService>();
+            services.AddScoped<NotificationService>();
+            services.AddScoped<TooltipService>();
+            services.AddScoped<ContextMenuService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
