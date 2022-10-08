@@ -32,7 +32,7 @@ namespace OSD.RazorData.Repositories.SysMapper.Tables
                 // This method returns the ID of the latest insert
                 try
                 {
-                    var sql = "INSERT INTO [dbo].[OU] (Team,Organization,CategoryId, LifeCycleId)  VALUES (@Team,@Organization,@CategoryId, @LifeCycleId); "
+                    var sql = "INSERT INTO [dbo].[OU] (Organization,CategoryId, LifeCycleId)  VALUES (@Organization,@CategoryId, @LifeCycleId); "
                             + "SELECT CAST(SCOPE_IDENTITY() as int);";
                     var id = cnn.Query<int>(sql, v).Single();
                     v.OuId = id;
@@ -101,7 +101,7 @@ namespace OSD.RazorData.Repositories.SysMapper.Tables
         {
             using (var cnn = new SqlConnection(ConnectionString))
             {
-                var sql = "SELECT * FROM [dbo].[Ou] WHERE UPPER(Organization)  LIKE CONCAT('%',@SearchString,'%') OR UPPER(Team)  LIKE CONCAT('%',@SearchString,'%') ";
+                var sql = "SELECT * FROM [dbo].[Ou] WHERE UPPER(Organization)  LIKE CONCAT('%',@SearchString,'%') ";
                 Console.WriteLine("String: Count: " + searchString.Count() + " String Value: " + searchString);
 
                 IEnumerable<Ou> results = await cnn.QueryAsync<Ou>(sql, new { @SearchString = searchString.ToUpper() });
@@ -112,7 +112,7 @@ namespace OSD.RazorData.Repositories.SysMapper.Tables
         {
             using (var cnn = new SqlConnection(ConnectionString))
             {
-                var sql = "SELECT * FROM [dbo].[Ou] WHERE  (UPPER(Organization)  LIKE CONCAT('%',@SearchString,'%') OR UPPER(Team)  LIKE CONCAT('%',@SearchString,'%')) AND LifeCycleId =  @SearchId ";
+                var sql = "SELECT * FROM [dbo].[Ou] WHERE  (UPPER(Organization)  LIKE CONCAT('%',@SearchString,'%') ) AND LifeCycleId =  @SearchId ";
                 Console.WriteLine("String: Count: " + searchString.Count() + " String Value: " + searchString);
 
                 IEnumerable<Ou> results = await cnn.QueryAsync<Ou>(sql, new { @SearchString = searchString.ToUpper(), @SearchId = searchId });
@@ -135,7 +135,7 @@ namespace OSD.RazorData.Repositories.SysMapper.Tables
             using (var cnn = new SqlConnection(ConnectionString))
             {
                 // UPDATE Companies SET Name = @Name, Address=@Address, City=@City, PostalCode=@PostalCode WHERE CompanyID=@CompanyId;
-                var sql = "UPDATE [dbo].[OU] SET Team = @Team, Organization=@Organization,CategoryId=@CategoryId, LifeCycleId=@LifeCycleId "
+                var sql = "UPDATE [dbo].[OU] SET  Organization=@Organization,CategoryId=@CategoryId, LifeCycleId=@LifeCycleId "
                     + "WHERE OuId=@OuId;";
                 cnn.Execute(sql, v);
                 return v;

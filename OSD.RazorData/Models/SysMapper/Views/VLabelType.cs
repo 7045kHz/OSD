@@ -15,6 +15,6 @@ namespace OSD.RazorData.Models.SysMapper.Views
         public string CategoryName { get; set; }
         public int? OuId { get; set; }
         public string Organization { get; set; }
-        public string Team { get; set; }
+
     }
 }

@@ -37,7 +37,7 @@ namespace OSD.RazorData.Repositories.SysMapper.Views
         }
         public List<VOu> Search(string searchString)
         {
-            var sql = "SELECT * FROM [dbo].[v_OU] WHERE UPPER(Team)  LIKE CONCAT('%',@SearchString,'%') OR UPPER(Organization) LIKE CONCAT('%',@SearchString,'%') OR UPPER(LifeCycleName) LIKE CONCAT('%',@SearchString,'%') OR UPPER(CategoryName) LIKE CONCAT('%',@SearchString,'%')";
+            var sql = "SELECT * FROM [dbo].[v_OU] WHERE  UPPER(Organization) LIKE CONCAT('%',@SearchString,'%') OR UPPER(LifeCycleName) LIKE CONCAT('%',@SearchString,'%') OR UPPER(CategoryName) LIKE CONCAT('%',@SearchString,'%')";
             Console.WriteLine("String: Count: " + searchString.Count() + " String Value: " + searchString);
 
             IEnumerable<VOu> results =   db.Query<VOu>(sql, new { @SearchString = searchString.ToUpper() });
@@ -47,7 +47,7 @@ namespace OSD.RazorData.Repositories.SysMapper.Views
         public async Task<List<VOu>> SearchAsync(string searchString)
         {
             
-            var sql = "SELECT * FROM [dbo].[v_OU] WHERE UPPER(Team)  LIKE CONCAT('%',@SearchString,'%') OR UPPER(Organization) LIKE CONCAT('%',@SearchString,'%') OR UPPER(LifeCycleName) LIKE CONCAT('%',@SearchString,'%') OR UPPER(CategoryName) LIKE CONCAT('%',@SearchString,'%')";
+            var sql = "SELECT * FROM [dbo].[v_OU] WHERE  UPPER(Organization) LIKE CONCAT('%',@SearchString,'%') OR UPPER(LifeCycleName) LIKE CONCAT('%',@SearchString,'%') OR UPPER(CategoryName) LIKE CONCAT('%',@SearchString,'%')";
             Console.WriteLine("String: Count: " + searchString.Count() + " String Value: " + searchString);
    
             IEnumerable<VOu> results = await db.QueryAsync<VOu>(sql, new { @SearchString = searchString.ToUpper() });

@@ -31,7 +31,7 @@ namespace OSD.RazorData.Repositories.SysMapper.Views
 
         public List<VLabelType> Search(string searchString)
         {
-            var sql = "SELECT * FROM [dbo].[v_LabelType] WHERE UPPER(Name)  LIKE CONCAT('%',@SearchString,'%')  OR UPPER(LifeCycleName) LIKE CONCAT('%',@SearchString,'%') OR UPPER(CategoryName) LIKE CONCAT('%',@SearchString,'%')  OR UPPER(Organization) LIKE CONCAT('%',@SearchString,'%') OR UPPER(Team) LIKE CONCAT('%',@SearchString,'%')";
+            var sql = "SELECT * FROM [dbo].[v_LabelType] WHERE UPPER(Name)  LIKE CONCAT('%',@SearchString,'%')  OR UPPER(LifeCycleName) LIKE CONCAT('%',@SearchString,'%') OR UPPER(CategoryName) LIKE CONCAT('%',@SearchString,'%')  OR UPPER(Organization) LIKE CONCAT('%',@SearchString,'%') ";
             Console.WriteLine("String: Count: " + searchString.Count() + " String Value: " + searchString);
 
             IEnumerable<VLabelType> results = db.Query<VLabelType>(sql, new { @SearchString = searchString.ToUpper() });
@@ -41,7 +41,7 @@ namespace OSD.RazorData.Repositories.SysMapper.Views
         public async Task<List<VLabelType>> SearchAsync(string searchString)
         {
 
-            var sql = "SELECT * FROM [dbo].[v_LabelType] WHERE UPPER(Name)  LIKE CONCAT('%',@SearchString,'%')  OR UPPER(LifeCycleName) LIKE CONCAT('%',@SearchString,'%') OR UPPER(CategoryName) LIKE CONCAT('%',@SearchString,'%')  OR UPPER(Organization) LIKE CONCAT('%',@SearchString,'%') OR UPPER(Team) LIKE CONCAT('%',@SearchString,'%')";
+            var sql = "SELECT * FROM [dbo].[v_LabelType] WHERE UPPER(Name)  LIKE CONCAT('%',@SearchString,'%')  OR UPPER(LifeCycleName) LIKE CONCAT('%',@SearchString,'%') OR UPPER(CategoryName) LIKE CONCAT('%',@SearchString,'%')  OR UPPER(Organization) LIKE CONCAT('%',@SearchString,'%') ";
             Console.WriteLine("String: Count: " + searchString.Count() + " String Value: " + searchString);
 
             IEnumerable<VLabelType> results = await db.QueryAsync<VLabelType>(sql, new { @SearchString = searchString.ToUpper() });

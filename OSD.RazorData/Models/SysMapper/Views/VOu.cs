@@ -9,7 +9,7 @@ namespace OSD.RazorData.Models.SysMapper.Views
     {
         public int OuId { get; set; }
         public string Organization { get; set; }
-        public string Team { get; set; }
+
         public int? LifeCycleId { get; set; }
         public string LifeCycleName { get; set; }
         public int? CategoryId { get; set; }

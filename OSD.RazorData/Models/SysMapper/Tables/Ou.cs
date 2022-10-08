@@ -18,10 +18,7 @@ namespace OSD.RazorData.Models.SysMapper.Tables
         [DisplayName("Enter Organization: ")]
         [StringLength(256, ErrorMessage = "Organization is too long.")]
         public string Organization { get; set; }
-        [Required(ErrorMessage = "Team is Required")]
-        [DisplayName("Enter Team: ")]
-        [StringLength(256, ErrorMessage = "Team is too long.")]
-        public string Team { get; set; }
+
         public int? CategoryId { get; set; }
         public int? LifeCycleId { get; set; }
 
