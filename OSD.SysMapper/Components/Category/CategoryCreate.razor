@@ -1,0 +1,163 @@
+﻿@inject ILifeCycleRepository LifeCycleRepository
+@inject ICategoryRepository CategoryRepository
+@inject  NavigationManager  NavigationManager
+@inject NotificationService NotificationService
+@using System
+
+@using Microsoft.Extensions.Logging
+<div class="form-group">
+@if (!Submitted)
+{
+
+<EditForm Model="@exampleModel" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+   <ValidationSummary />
+   <div class="form-group row">
+            <div class="col-md-6 p-3">
+                <RadzenCard>
+                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Category Name</RadzenText>
+                    <RadzenTextBox Placeholder="Enter a category name..." Change=@(args => OnChange(args, "EnterName")) Class="w-100" />
+                </RadzenCard>
+            </div>
+   </div>
+   <div class="form-group row">
+            <div class="col-md-6 p-3">
+                <RadzenCard>
+                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Select Lifecycle</RadzenText>
+                    <RadzenDropDown AllowClear="true" TValue="int" Class="w-100"
+                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                    Data=@LifeCycles TextProperty="Name" ValueProperty="LifeCycleId"
+                                    Change=@(args => OnChange(args, "SelectLifeCycle")) />
+ 
+                </RadzenCard>
+            </div>
+   </div>      
+   
+        
+
+   <div class="form-group row">
+                <div class="col-lg-6 col-lg-4 p-3">
+                    <RadzenButton Shade="Shade.Darker" Click=HandleValidSubmit Text="Create" ButtonStyle="ButtonStyle.Danger" />
+
+                @if (!isVisable)
+                {
+                    <RadzenButton Click="@toggleViewCategory" Icon="add" Shade="Shade.Light" ButtonStyle="ButtonStyle.Info" Text="Display Existing Categories"></RadzenButton>
+                }
+
+                <!-- Two isVisable needed to keep buttons for hide and show in same postion -->
+                @if (isVisable)
+                {
+                    <RadzenButton Click="@toggleViewCategory" Shade="Shade.Light" ButtonStyle="ButtonStyle.Info" Text="Hide Categories"></RadzenButton>
+                }
+                </div>
+               @if (isVisable)
+                {
+                    <CategoryMinimalList></CategoryMinimalList>
+                }
+   </div>
+    
+ </EditForm>
+
+
+}
+else if (IsSaved)
+ {
+        <div class="col-lg-6 col-xl-4 p-3">
+            <RadzenCard>
+                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Success</RadzenText>
+                <RadzenButton Text="Saved New Category" Class="w-100"
+                          ButtonStyle="ButtonStyle.Success"
+                          Click=@(args => ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Success Summary", Detail = "Success Detail", Duration = 4000 })) />
+            </RadzenCard>
+        </div>
+ }
+else
+ {
+    <div class="col-lg-6 col-xl-4 p-3">
+        <RadzenCard>
+            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Failed</RadzenText>
+            <RadzenButton Text="Category already exists" Class="w-100"
+                          ButtonStyle="ButtonStyle.Danger"
+                          Click=@(args => ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Warning, Summary = "Failed", Detail = "Category already exists", Duration = 4000 })) />
+        </RadzenCard>
+    </div>
+ }
+ </div>
+
+@code {
+    [Parameter]
+    public string SearchName { get; set; } = string.Empty;
+    [Parameter]
+    public int SearchId { get; set; } = -1;
+
+    // public string rSelectedCategoryId = string.Empty;
+    public List<LifeCycle> LifeCycles { get; set; } = new List<LifeCycle>();
+    private bool IsSaved { get; set; } = false;
+    private bool Submitted { get; set; } = false;
+    private bool isVisable = false;
+
+    private int NameExists { get; set; } = 2;
+    private Category exampleModel = new Category();
+
+
+    protected async override Task OnInitializedAsync()
+    {
+        LifeCycles = (await LifeCycleRepository.GetAllAsync()).ToList();
+    }
+
+    private async void HandleValidSubmit()
+    {
+
+        // exampleModel.LifeCycleId = Int32.Parse(rSelectedCategoryId);
+        NameExists = CategoryRepository.NameExists(exampleModel.Name.ToString());
+
+
+        if (NameExists < 1 )
+        {
+            await  CategoryRepository.AddAsync(exampleModel);
+            Console.WriteLine("Does not exist - Will create: " + NameExists);
+            Submitted = true;
+            IsSaved = true;
+            StateHasChanged();
+
+        }
+        else {
+            Console.WriteLine("Name exists - not creating: " + NameExists);
+            Submitted = true;
+            IsSaved = false;
+            StateHasChanged();
+        }
+
+        Console.WriteLine("Catagory ID: " + exampleModel.CategoryId);
+        // Process the valid form
+    }
+    void ShowNotification(NotificationMessage message)
+    {
+        NotificationService.Notify(message);
+
+        Console.Write($"{message.Severity} notification");
+        NavigationManager.NavigateTo("/categoryCreate", true);
+    }
+ 
+    void OnChange(object value, string name)
+    {
+        switch (name){
+            case "EnterName":
+                exampleModel.Name = value.ToString();
+                break;
+            case "SelectLifeCycle":
+                exampleModel.LifeCycleId = (int)value;
+                break;
+            default:
+                Console.WriteLine($"Got unknown: {name} value changed to {value} ");
+                break;
+        } 
+        Console.WriteLine($"Setting exampleModel.Name {exampleModel.Name.ToString()} and exampleModel.LifeCycleId set to {(int)exampleModel.LifeCycleId} ");
+ 
+     }
+    
+    private void toggleViewCategory()
+    {
+        this.isVisable = !this.isVisable;
+    }
+}

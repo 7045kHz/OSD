@@ -52,7 +52,33 @@ namespace OSD.RazorData.Repositories.SysMapper.Tables
             }
         }
 
+        public async Task<Category> AddAsync(Category category)
+        {
+            using (var cnn = new SqlConnection(ConnectionString))
+            {
+                // INSERT INTO Companies (Name, Address,City,State,PostalCode) 
+                // VALUES (@Name, @Address, @City, @State, @PostalCode);
+                // SELECT CAST(SCOPDE_IDENTITY() as int);
+                // This method returns the ID of the latest insert
+                try
+                {
+                    {
+                        var sql = "INSERT INTO [dbo].[Category] (Name, LifeCycleId)  VALUES (@Name, @LifeCycleId); "
+                                + "SELECT CAST(SCOPE_IDENTITY() as int);";
+                        var id = (await cnn.QueryAsync<int>(sql, category)).Single();
 
+                        category.CategoryId = id;
+                        return category;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Failed insert");
+                    category.CategoryId = -1;
+                    return category;
+                }
+            }
+        }
 
 
 

@@ -1,0 +1,15 @@
+﻿@page "/categoryIndex"
+@using OSD.SysMapper.Components.Category
+@inject IViewCategoryRepository ViewCategoryRepository
+@inject NavigationManager NavigationManager
+ <CategoryList></CategoryList>
+<RadzenButton Variant="Variant.Text" Click=@(args => OnClick("Dark button")) Text="+ Add Category" ButtonStyle="ButtonStyle.Dark" />
+
+
+@code {
+ 
+    void OnClick(string name)
+    {
+        NavigationManager.NavigateTo($"/categoryCreate");
+    }
+}

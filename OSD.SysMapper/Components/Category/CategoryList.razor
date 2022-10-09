@@ -1,0 +1,156 @@
+﻿@inject IViewCategoryRepository ViewCategoryRepository
+@inject ICategoryRepository CategoryRepository
+@inject NavigationManager NavigationManager
+@inject NotificationService NotificationService
+
+
+@if (!submitted)
+{
+
+        <RadzenText TextStyle="TextStyle.H3" TagName="TagName.H1" Class="my-4">
+            DataGrid <strong>Category Inventory</strong>
+        </RadzenText>
+        <RadzenCard Class="m-4" style="display: flex; align-items: center; gap: 0.5rem">
+            <RadzenCheckBox @bind-Value=@allowRowSelectOnRowClick Name="CheckBox1" />
+            <RadzenLabel Text="Allow row select on row click" Component="CheckBox1" />
+        </RadzenCard>
+
+        <RadzenDataGrid 
+            TItem="VCategory"
+            Data="@data"
+
+                        @ref="dataGrid"
+                        AllowRowSelectOnRowClick="@allowRowSelectOnRowClick"
+                        SelectionMode="DataGridSelectionMode.Multiple" 
+                        @bind-Value=@selectedData Class="m-4"
+
+
+            AllowColumnResize="true"
+
+                        AllowFiltering="true"
+                        FilterMode="FilterMode.Advanced"
+                        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                        LogicalFilterOperator="LogicalFilterOperator.Or"
+
+            PageSize="5"
+            AllowPaging="true" 
+            PagerHorizontalAlign="HorizontalAlign.Center" 
+            AllowSorting="true" 
+            PageSizeOptions="@pageSizeOptions" 
+            ShowPagingSummary="@showPagerSummary" 
+            PagingSummaryFormat="@pagingSummaryFormat" 
+            Page="@OnPage">
+
+            <EmptyTemplate>
+                <p style="color: lightgrey; font-size: 24px; text-align: center; margin: 2rem;">No records to display.</p>
+            </EmptyTemplate>
+            <Columns>
+                <RadzenDataGridColumn TItem="VCategory" Width="60px" Sortable="false" Filterable="false">
+                    <HeaderTemplate>
+                        <RadzenCheckBox TriState="false" TValue="bool" Value="@(data.Any(i => selectedData != null && selectedData.Contains(i)))"
+                                        Change="@(args => selectedData = args ? data.ToList() : null)" />
+                    </HeaderTemplate>
+                    <Template Context="data">
+                        <RadzenCheckBox TriState="false" Value="@(selectedData != null && selectedData.Contains(data))"
+                                        TValue="bool" Change=@(args => { if(!allowRowSelectOnRowClick) { dataGrid.SelectRow(data); }}) />
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="VCategory" Property="CategoryId" Title="Category ID"  TextAlign="TextAlign.Center" />
+                <RadzenDataGridColumn TItem="VCategory" Property="Name" Title="Category Name" />
+                <RadzenDataGridColumn TItem="VCategory" Property="LifeCycleId" Title="LifeCycle ID" />
+                <RadzenDataGridColumn TItem="VCategory" Property="LifeCycleName" Title="LifeCycle Name" />
+            </Columns>
+        </RadzenDataGrid>
+        <RadzenButton Shade="Shade.Darker" Click=OnDelete Text="Delete Selected Records" ButtonStyle="ButtonStyle.Danger" />
+    <RadzenButton Shade="Shade.Darker" Click=OnBulkUpdate Text="Bulk Update Selected Records" ButtonStyle="ButtonStyle.Danger" />
+
+}
+else 
+{
+    if (!bulkUpdate)
+    {
+        <div class="col-lg-6 col-xl-4 p-3">
+            <RadzenCard>
+                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Success</RadzenText>
+                <RadzenButton Text=@deleted_text Class="w-100"
+                          ButtonStyle="ButtonStyle.Success"
+                          Click=@(args => ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Success Summary", Detail = "Success Detail", Duration = 4000 })) />
+            </RadzenCard>
+        </div>
+    }
+    else 
+    {
+        <CategoryBulkUpdate Data="selectedData"></CategoryBulkUpdate>
+    }
+}
+
+
+@code {
+    // List<Category> data = new List<Category>();
+    private IEnumerable<VCategory> data;
+    IList<VCategory> selectedData;
+    RadzenDataGrid<VCategory> dataGrid;
+
+    bool allowRowSelectOnRowClick = true;
+    bool submitted = false;
+    bool bulkUpdate = false;
+
+
+    IEnumerable<int> pageSizeOptions = new int[] { 5, 10, 20, 30 };
+    string pagingSummaryFormat = "Displaying page {0} of {1} (total {2} records)";
+
+    bool showPagerSummary = true;
+
+    private int delcount { get; set; } = 0;
+    private string deleted_text { get; set; }
+    async Task FirstPage()
+    {
+        await dataGrid.FirstPage();
+    }
+    async Task TenthPage()
+    {
+        await dataGrid.GoToPage(9);
+    }
+    async Task LastPage()
+    {
+        await dataGrid.LastPage();
+    }
+    string emptyText = "No Items to display!";
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        data = ViewCategoryRepository.GetAll();
+    }
+    void OnPage(PagerEventArgs args)
+    {
+    //
+    }
+
+
+    void OnDelete()
+    {
+
+        foreach (var item in selectedData){
+            Console.WriteLine(item.CategoryId);
+            delcount++;
+            CategoryRepository.Remove(item.CategoryId);
+        }
+        submitted = true;
+        deleted_text = $"Deleted {delcount} records";
+    }
+
+    void OnBulkUpdate()
+    {
+        submitted = true;
+        bulkUpdate = true;
+    }
+
+    void ShowNotification(NotificationMessage message)
+    {
+        NotificationService.Notify(message);
+
+        Console.Write($"{message.Severity} notification");
+        NavigationManager.NavigateTo("/categoryIndex", true);
+    }
+}

@@ -10,6 +10,7 @@ namespace OSD.RazorData.Repositories.SysMapper.Tables
         Task<List<Category>> GetAllAsyncOrder(int skip, int take, string orderBy, string direction  );
 
         Category Add(Category category);
+        Task<Category> AddAsync(Category category);
         Category Find(int id);
         List<Category> GetAll();
         Task<List<Category>> GetAllAsync();

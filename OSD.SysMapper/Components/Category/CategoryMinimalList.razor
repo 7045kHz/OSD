@@ -1,25 +1,13 @@
-﻿@page "/categoryList"
-@inject IViewCategoryRepository ViewCategoryRepository
-
+﻿@inject IViewCategoryRepository ViewCategoryRepository
+@inject NavigationManager NavigationManager
 <RadzenText TextStyle="TextStyle.H3" TagName="TagName.H1" Class="my-4">
-    DataGrid <strong>Multiple Selection of Categories</strong>
+    DataGrid <strong>Categories</strong>
 </RadzenText>
 
  
-<RadzenCard Class="m-4" style="display: flex; align-items: center; gap: 0.5rem">
-    <RadzenCheckBox @bind-Value=@allowRowSelectOnRowClick Name="CheckBox1" />
-    <RadzenLabel Text="Allow row select on row click" Component="CheckBox1" />
-</RadzenCard>
-
 <RadzenDataGrid 
     TItem="VCategory"
     Data="@data"
-
-                @ref="dataGrid"
-                AllowRowSelectOnRowClick="@allowRowSelectOnRowClick"
-                SelectionMode="DataGridSelectionMode.Multiple" 
-                @bind-Value=@selectedData Class="m-4"
-
 
     AllowColumnResize="true"
 
@@ -41,16 +29,6 @@
         <p style="color: lightgrey; font-size: 24px; text-align: center; margin: 2rem;">No records to display.</p>
     </EmptyTemplate>
     <Columns>
-        <RadzenDataGridColumn TItem="VCategory" Width="60px" Sortable="false" Filterable="false">
-            <HeaderTemplate>
-                <RadzenCheckBox TriState="false" TValue="bool" Value="@(data.Any(i => selectedData != null && selectedData.Contains(i)))"
-                                Change="@(args => selectedData = args ? data.ToList() : null)" />
-            </HeaderTemplate>
-            <Template Context="data">
-                <RadzenCheckBox TriState="false" Value="@(selectedData != null && selectedData.Contains(data))"
-                                TValue="bool" Change=@(args => { if(!allowRowSelectOnRowClick) { dataGrid.SelectRow(data); }}) />
-            </Template>
-        </RadzenDataGridColumn>
         <RadzenDataGridColumn TItem="VCategory" Property="CategoryId" Title="Category ID"  TextAlign="TextAlign.Center" />
         <RadzenDataGridColumn TItem="VCategory" Property="Name" Title="Category Name" />
         <RadzenDataGridColumn TItem="VCategory" Property="LifeCycleId" Title="LifeCycle ID" />
@@ -58,13 +36,13 @@
     </Columns>
 </RadzenDataGrid>
 
+
 @code {
     // List<Category> data = new List<Category>();
     private IEnumerable<VCategory> data;
-    IList<VCategory> selectedData;
     RadzenDataGrid<VCategory> dataGrid;
 
-    bool allowRowSelectOnRowClick = true;
+
 
 
     IEnumerable<int> pageSizeOptions = new int[] { 5, 10, 20, 30 };
@@ -96,4 +74,5 @@
     {
         //
     }
-}
+
+    }
