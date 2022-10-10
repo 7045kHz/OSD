@@ -20,4 +20,8 @@
     <ProjectReference Include="..\OSD.RazorData\OSD.RazorData.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Pages\Demo\" />
+  </ItemGroup>
+
 </Project>

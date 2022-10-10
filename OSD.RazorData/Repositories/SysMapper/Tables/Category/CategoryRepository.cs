@@ -89,11 +89,22 @@ namespace OSD.RazorData.Repositories.SysMapper.Tables
             {
                 // SELECT * FROM Companies WHERE CompanyId = @Id
                 var sql = "SELECT * FROM [dbo].[Category] WHERE CategoryId = @CategoryId";
-                return cnn.Query<Category>(sql, new { @CompanyId = id }).Single();
+                return cnn.Query<Category>(sql, new { @CategoryId = id }).Single();
             }
         }
 
-
+        public async Task<Category> FindAsync(int id)
+        {
+            using (var cnn = new SqlConnection(ConnectionString))
+            {
+                // SELECT * FROM Companies WHERE CompanyId = @Id
+                Console.WriteLine($"FindAsync id = {id}");
+                var sql = "SELECT * FROM [dbo].[Category] WHERE CategoryId = @CategoryId";
+                var r = await cnn.QueryAsync<Category>(sql, new { @CategoryId = id });
+                Console.WriteLine($"FindAsync return = {r.Single()}");
+                return r.Single();
+            }
+        }
         public int NameExists(string name)
         {
             using (var cnn = new SqlConnection(ConnectionString))
@@ -108,8 +119,8 @@ namespace OSD.RazorData.Repositories.SysMapper.Tables
                 var sql = "[SYSMAPPER].[dbo].[mapr_CategoryExistsName]";
                 var results = cnn.Execute(sql, param, commandType: CommandType.StoredProcedure);
                 Console.WriteLine("SP (ToString) results = " + results.ToString());
-                Console.WriteLine("SP (Raw) results = " + results );
-                var r =  param.Get<int>("@Exists");
+                Console.WriteLine("SP (Raw) results = " + results);
+                var r = param.Get<int>("@Exists");
                 Console.WriteLine("R = " + r);
                 return r;
 
@@ -188,7 +199,16 @@ namespace OSD.RazorData.Repositories.SysMapper.Tables
             }
 
         }
+        public async void RemoveAsync(int id)
+        {
+            using (var cnn = new SqlConnection(ConnectionString))
+            {
+                // DELETE FROM Companies WHERE CompanyId = @Id
+                var sql = "DELETE FROM [dbo].[Category] WHERE CategoryId = @Id";
+                await cnn.ExecuteAsync(sql, new { @Id = id });
+            }
 
+        }
         public Category Update(Category category)
         {
             using (var cnn = new SqlConnection(ConnectionString))
@@ -197,6 +217,17 @@ namespace OSD.RazorData.Repositories.SysMapper.Tables
                 var sql = "UPDATE [dbo].[Category] SET Name = @Name, LifeCycleId = @LifeCycleId "
                     + "WHERE CategoryId=@CategoryId;";
                 cnn.Execute(sql, category);
+                return category;
+            }
+        }
+        public async Task<Category> UpdateAsync(Category category)
+        {
+            using (var cnn = new SqlConnection(ConnectionString))
+            {
+                // UPDATE Companies SET Name = @Name, Address=@Address, City=@City, PostalCode=@PostalCode WHERE CompanyID=@CompanyId;
+                var sql = "UPDATE [dbo].[Category] SET Name = @Name, LifeCycleId = @LifeCycleId "
+                    + "WHERE CategoryId=@CategoryId;";
+                await cnn.ExecuteAsync(sql, category);
                 return category;
             }
         }

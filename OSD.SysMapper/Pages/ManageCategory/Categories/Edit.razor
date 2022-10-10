@@ -1,0 +1,11 @@
+﻿@page "/categoryEdit/{id:int}"
+@using OSD.SysMapper.Components.Category
+
+
+<CategoryEdit SearchId=@id></CategoryEdit>
+ 
+ 
+@code {
+    [Parameter]
+    public int id { get; set; }
+}
