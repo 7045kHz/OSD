@@ -3,6 +3,7 @@
 @inject NavigationManager NavigationManager
 @inject NotificationService NotificationService
 @inject DialogService DialogService
+@using OSD.SysMapper.Components.LOV
 
 @if (!submitted)
 {
@@ -61,39 +62,24 @@
                 <RadzenDataGridColumn TItem="VCategory" Property="LifeCycleName" Title="LifeCycle Name" />
             <RadzenDataGridColumn TItem="VCategory" Property="LifeCycleId" Title="Edit" Sortable="false" Filterable="false">
                     <Template Context="data">
-                        <RadzenButton ButtonStyle="ButtonStyle.Dark" Variant="Variant.Flat" Shade="Shade.Lighter" Icon="info" Class="m-1" Click=@(() => GoEdit(data.CategoryId)) Text="edit" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Dark" Variant="Variant.Flat" Shade="Shade.Lighter" Icon="info" Class="m-1" Click=@(() => ShowEditDialog(data)) Text="edit" />
                     </Template>
                 </RadzenDataGridColumn>
             </Columns>
         </RadzenDataGrid>
         <RadzenButton Shade="Shade.Darker" Click=ShowOnDeleteDialog Text="Delete Selected Records" ButtonStyle="ButtonStyle.Danger" />
-    <RadzenButton Shade="Shade.Darker" Click=OnBulkUpdate Text="Bulk Update Selected Records" ButtonStyle="ButtonStyle.Danger" />
+        <RadzenButton Shade="Shade.Darker" Click=ShowUpdateDialog Text="Bulk Update Selected Records" ButtonStyle="ButtonStyle.Danger" />
 
 }
-else 
-{
-    if (!bulkUpdate)
-    {
-        <div class="col-lg-6 col-xl-4 p-3">
-            <RadzenCard>
-                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Success</RadzenText>
-                <RadzenButton Text=@deleted_text Class="w-100"
-                          ButtonStyle="ButtonStyle.Success"
-                          Click=@(args => ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Success Summary", Detail = "Success Detail", Duration = 4000 })) />
-            </RadzenCard>
-        </div>
-    }
-    else 
-    {
-        <CategoryBulkUpdate Data="selectedData"></CategoryBulkUpdate>
-    }
-}
+ 
 
 
 @code {
     // List<Category> data = new List<Category>();
     private IEnumerable<VCategory> data;
     IList<VCategory> selectedData;
+
+    int bulkLifeCycleId { get; set; } = -1;
     RadzenDataGrid<VCategory> dataGrid;
 
     bool allowRowSelectOnRowClick = true;
@@ -132,26 +118,22 @@ else
     //
     }
 
-    void GoEdit(int id)
-    {
-        Console.WriteLine($"Got ID {id} changing to categoryEdit");
-       NavigationManager.NavigateTo($"/categoryEdit/{id}");
 
-    }
  
     async Task ShowOnDeleteDialog()
     {
         var result = await DialogService.OpenAsync("Delete Dialog", ds =>
-    @<div>
-        <p Style="margin-bottom: 1rem">Delete @selectedData.Count() Records?</p>
-        <div class="row">
-            <div class="col-md-12">
-                <RadzenButton Text="Ok" ButtonStyle="ButtonStyle.Danger"  Click="() => ds.Close(true)" Style="margin-bottom: 10px; width: 150px" />
-                <RadzenButton Text="Cancel" Click="() => ds.Close(false)" ButtonStyle="ButtonStyle.Dark" Style="margin-bottom: 10px; width: 150px" />
-                <RadzenButton Text="Refresh" Click="(() => { submitted = false; ds.Refresh(); })" ButtonStyle="ButtonStyle.Info" Style="margin-bottom: 10px; width: 150px" />
+        @<div>
+            <p Style="margin-bottom: 1rem">Delete @selectedData.Count() Records?</p>
+            <div class="row">
+
+                <div class="col-md-12">
+                    <RadzenButton Text="Ok" ButtonStyle="ButtonStyle.Danger"  Click="() => ds.Close(true)" Style="margin-bottom: 10px; width: 150px" />
+                    <RadzenButton Text="Cancel" Click="() => ds.Close(false)" ButtonStyle="ButtonStyle.Dark" Style="margin-bottom: 10px; width: 150px" />
+                    <RadzenButton Text="Refresh" Click="(() => { submitted = false; ds.Refresh(); })" ButtonStyle="ButtonStyle.Info" Style="margin-bottom: 10px; width: 150px" />
                 
+                </div>
             </div>
-        </div>
         </div>
     );
         if(result) 
@@ -160,23 +142,114 @@ else
         }
         Console.WriteLine($"ShowOnDeleteDialog Dialog result: {result}");
     }
-    void OnDelete()
+    async void   OnDelete()
     {
-
         foreach (var item in selectedData){
-            Console.WriteLine(item.CategoryId);
-            delcount++;
-            CategoryRepository.Remove(item.CategoryId);
+            Console.WriteLine($"Deleting item {item.CategoryId}");
+
+            var dbresult = await  CategoryRepository.RemoveAsync(item.CategoryId);
+            if (dbresult != 1)
+            {
+                Console.WriteLine($"Failed removing record {item.CategoryId} with status {dbresult}");
+            } else {
+                Console.WriteLine($"Removed item {item.CategoryId}");
+                delcount++;
+                
+            }
         }
-        submitted = true;
-        deleted_text = $"Deleted {delcount} records";
+        NavigationManager.NavigateTo("/categoryIndex", true);
+         
+    }
+     async Task ShowEditDialog(VCategory T)
+    {
+        var result = await DialogService.OpenAsync("Edit Dialog", ds =>
+        @<div>
+            <p Style="margin-bottom: 1rem">Update @T.Name Record?</p>
+            <div class="row">
+                <div class="col-md-12">
+                    <LifecycleLOV OnClose="BulkLifeCycleId"  ></LifecycleLOV>
+
+                </div>
+                <div class="col-md-12">
+                    <RadzenButton Text="Ok" ButtonStyle="ButtonStyle.Danger"  Click="() => ds.Close(true)" Style="margin-bottom: 10px; width: 150px" />
+                    <RadzenButton Text="Cancel" Click="() => ds.Close(false)" ButtonStyle="ButtonStyle.Dark" Style="margin-bottom: 10px; width: 150px" />
+                    <RadzenButton Text="Refresh" Click="(() => { submitted = false; ds.Refresh(); })" ButtonStyle="ButtonStyle.Info" Style="margin-bottom: 10px; width: 150px" />
+                
+                </div>
+            </div>
+        </div>
+    );
+        if(result) 
+        {
+            try {
+ 
+                    var u  = new Category();
+                    u.Name = T.Name;
+                    u.CategoryId = T.CategoryId;
+                    u.LifeCycleId = bulkLifeCycleId;
+
+                    await CategoryRepository.UpdateAsync(u);
+                    Console.WriteLine($"Updated Item {T.Name} with {u.LifeCycleId} in ShowUpdateDialog");
+                    NavigationManager.NavigateTo("/categoryIndex", true);
+ 
+
+            } 
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+        Console.WriteLine($"ShowEditDialog Dialog result: {result}");
     }
 
-    void OnBulkUpdate()
+    async Task ShowUpdateDialog()
     {
-        submitted = true;
-        bulkUpdate = true;
+        var result = await DialogService.OpenAsync("Update Dialog", ds =>
+        @<div>
+            <p Style="margin-bottom: 1rem">Update @selectedData.Count() Records?</p>
+            <div class="row">
+                <div class="col-md-12">
+                    <LifecycleLOV OnClose="BulkLifeCycleId"  ></LifecycleLOV>
+
+                </div>
+                <div class="col-md-12">
+                    <RadzenButton Text="Ok" ButtonStyle="ButtonStyle.Danger"  Click="() => ds.Close(true)" Style="margin-bottom: 10px; width: 150px" />
+                    <RadzenButton Text="Cancel" Click="() => ds.Close(false)" ButtonStyle="ButtonStyle.Dark" Style="margin-bottom: 10px; width: 150px" />
+                    <RadzenButton Text="Refresh" Click="(() => { submitted = false; ds.Refresh(); })" ButtonStyle="ButtonStyle.Info" Style="margin-bottom: 10px; width: 150px" />
+                
+                </div>
+            </div>
+        </div>
+    );
+        if(result) 
+        {
+            try {
+                foreach (var item in selectedData ) 
+                {
+                    var u  = new Category();
+                    u.Name = item.Name;
+                    u.CategoryId = item.CategoryId;
+                    u.LifeCycleId = bulkLifeCycleId;
+
+                    await CategoryRepository.UpdateAsync(u);
+                    Console.WriteLine($"Updated Item {item.Name} with {u.LifeCycleId} in ShowUpdateDialog");
+                    NavigationManager.NavigateTo("/categoryIndex", true);
+                }
+
+            } 
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+        Console.WriteLine($"ShowUpdateDialog Dialog result: {result}");
     }
+
+    void BulkLifeCycleId(int newLifecycleId) {
+        bulkLifeCycleId = newLifecycleId;
+        Console.WriteLine($"Setting bulkLifeCycleId to {newLifecycleId} in  BulkLifeCycleId");
+    }
+ 
 
     void ShowNotification(NotificationMessage message)
     {

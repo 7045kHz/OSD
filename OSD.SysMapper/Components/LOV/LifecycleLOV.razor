@@ -1,0 +1,35 @@
+﻿@inject ILifeCycleRepository LifeCycleRepository
+@inject NavigationManager NavigationManager
+
+   <div class="form-group row">
+            <div class="col-md-6 p-3">
+                <RadzenCard>
+                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Select Lifecycle</RadzenText>
+                    <RadzenDropDown AllowClear="true" TValue="int" Class="w-100"
+                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                    Data=@LifeCycles TextProperty="Name" ValueProperty="LifeCycleId"
+                                   Change=@(args => OnChange(args)) />
+
+                </RadzenCard>
+            </div>
+    </div>
+ 
+@code {
+  
+    [Parameter] public EventCallback<int> OnClose { get; set; }
+    public List<LifeCycle> LifeCycles { get; set; } = new List<LifeCycle>();
+    private int bulkLifeCycleId { get; set; } = -1;
+
+    protected async override Task OnInitializedAsync()
+    {
+        LifeCycles = (await LifeCycleRepository.GetAllAsync()).ToList();
+    }
+   
+    private Task OnChange(object value)
+    {
+        bulkLifeCycleId = (int)value;
+        return OnClose.InvokeAsync(bulkLifeCycleId);
+    }
+     
+}
+ 

@@ -2,12 +2,12 @@
 @inject ICategoryRepository CategoryRepository
 @inject  NavigationManager  NavigationManager
 @inject NotificationService NotificationService
+@inject DialogService DialogService
 @using System
-
+@using OSD.SysMapper.Components.LOV
 @using Microsoft.Extensions.Logging
+
 <div class="form-group">
-@if (!Submitted)
-{
 
 <EditForm Model="@exampleModel" OnValidSubmit="@HandleValidSubmit">
     <DataAnnotationsValidator />
@@ -22,23 +22,18 @@
    </div>
    <div class="form-group row">
             <div class="col-md-6 p-3">
-                <RadzenCard>
-                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Select Lifecycle</RadzenText>
-                    <RadzenDropDown AllowClear="true" TValue="int" Class="w-100"
-                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                    Data=@LifeCycles TextProperty="Name" ValueProperty="LifeCycleId"
-                                    Change=@(args => OnChange(args, "SelectLifeCycle")) />
- 
-                </RadzenCard>
+                <LifecycleLOV OnClose="BulkLifeCycleId"></LifecycleLOV>
             </div>
+           
    </div>      
    
         
 
    <div class="form-group row">
                 <div class="col-lg-6 col-lg-4 p-3">
-                    <RadzenButton Shade="Shade.Darker" Click=HandleValidSubmit Text="Create" ButtonStyle="ButtonStyle.Danger" />
-                    <RadzenButton Shade="Shade.Lighter" Click=GoIndex Text="Cancel" ButtonStyle="ButtonStyle.Dark" />
+                <RadzenButton Text="Ok" ButtonStyle="ButtonStyle.Danger" Click="ShowAddDialog" Style="margin-bottom: 10px; width: 150px" />
+                <RadzenButton Text="Cancel" Click="GoIndex" ButtonStyle="ButtonStyle.Dark" Style="margin-bottom: 10px; width: 150px" />
+
 
                 @if (!isVisable)
                 {
@@ -60,29 +55,6 @@
  </EditForm>
 
 
-}
-else if (IsSaved)
- {
-        <div class="col-lg-6 col-xl-4 p-3">
-            <RadzenCard>
-                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Success</RadzenText>
-                <RadzenButton Text="Saved New Category" Class="w-100"
-                          ButtonStyle="ButtonStyle.Success"
-                          Click=@(args => ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Success Summary", Detail = "Success Detail", Duration = 4000 })) />
-            </RadzenCard>
-        </div>
- }
-else
- {
-    <div class="col-lg-6 col-xl-4 p-3">
-        <RadzenCard>
-            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Failed</RadzenText>
-            <RadzenButton Text="Category already exists" Class="w-100"
-                          ButtonStyle="ButtonStyle.Danger"
-                          Click=@(args => ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Warning, Summary = "Failed", Detail = "Category already exists", Duration = 4000 })) />
-        </RadzenCard>
-    </div>
- }
  </div>
 
 @code {
@@ -96,7 +68,7 @@ else
     private bool IsSaved { get; set; } = false;
     private bool Submitted { get; set; } = false;
     private bool isVisable = false;
-
+    private int bulkLifeCycleId { get; set; }
     private int NameExists { get; set; } = 2;
     private Category exampleModel = new Category();
 
@@ -105,6 +77,13 @@ else
     {
         LifeCycles = (await LifeCycleRepository.GetAllAsync()).ToList();
     }
+    void BulkLifeCycleId(int newLifecycleId)
+    {
+        bulkLifeCycleId = newLifecycleId;
+        Console.WriteLine($"Setting bulkLifeCycleId to {newLifecycleId} in  BulkLifeCycleId");
+    }
+
+
 
     private async void HandleValidSubmit()
     {
@@ -132,6 +111,47 @@ else
         Console.WriteLine("Catagory ID: " + exampleModel.CategoryId);
         // Process the valid form
     }
+    async Task ShowAddDialog()
+    {
+        var result = await DialogService.OpenAsync("Edit Dialog", ds =>
+        @<div>
+            <p Style="margin-bottom: 1rem">AddRecord?</p>
+            <div class="row">
+                <div class="col-md-12">
+                    <LifecycleLOV OnClose="BulkLifeCycleId"></LifecycleLOV>
+
+                </div>
+                <div class="col-md-12">
+                    <RadzenButton Text="Ok" ButtonStyle="ButtonStyle.Danger" Click="() => ds.Close(true)" Style="margin-bottom: 10px; width: 150px" />
+                    <RadzenButton Text="Cancel" Click="GoIndex" ButtonStyle="ButtonStyle.Dark" Style="margin-bottom: 10px; width: 150px" />
+
+                </div>
+            </div>
+        </div>
+    );
+        if (result)
+        {
+            try
+            {
+
+                var u = new Category();
+                u.Name = exampleModel.Name;
+                  u.LifeCycleId = bulkLifeCycleId;
+
+                await CategoryRepository.AddAsync(u);
+                Console.WriteLine($"Create Item {u.Name} with {u.LifeCycleId} in ShowAddDialog");
+                NavigationManager.NavigateTo("/categoryIndex", true);
+
+
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+        Console.WriteLine($"ShowEditDialog Dialog result: {result}");
+    }
+
     void ShowNotification(NotificationMessage message)
     {
         NotificationService.Notify(message);

@@ -6,8 +6,6 @@ namespace OSD.RazorData.Repositories.SysMapper.Tables
 {
     public interface IOuRepository
     {
-        string ConnectionString { get; set; }
-
         Ou Add(Ou v);
         Ou Find(int id);
         Ou Find(Ou v);

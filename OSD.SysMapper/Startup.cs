@@ -12,7 +12,6 @@ using Microsoft.Extensions.Hosting;
 using OSD.RazorData.Context;
 using OSD.RazorData.Repositories.SysMapper.Views;
 using OSD.RazorData.Repositories.SysMapper.Tables;
-
 using OSD.RazorData.Repositories.SysMapper.Programmability;
 using OSD.SysMapper.Areas.Identity;
 using OSD.SysMapper.Data;
@@ -37,11 +36,11 @@ namespace OSD.SysMapper
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<SysmapperDbContext>(options =>
-            options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddSingleton<DapperOSDISCOVERYDbContext>();
+            services.AddSingleton<DapperSysMapperDbContext>();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                    Configuration.GetConnectionString("AuthenticationConnection")));
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -65,6 +64,7 @@ namespace OSD.SysMapper
             services.AddScoped<NotificationService>();
             services.AddScoped<TooltipService>();
             services.AddScoped<ContextMenuService>();
+            services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
