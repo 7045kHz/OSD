@@ -24,10 +24,6 @@ namespace OSD.RazorData.Repositories.SysMapper.Tables
         {
             using (var cnn = _context.CreateConnection())
             {
-                // INSERT INTO Companies (Name, Address,City,State,PostalCode) 
-                // VALUES (@Name, @Address, @City, @State, @PostalCode);
-                // SELECT CAST(SCOPDE_IDENTITY() as int);
-                // This method returns the ID of the latest insert
                 try
                 {
                     var sql = "INSERT INTO [dbo].[OU] (Organization,CategoryId, LifeCycleId)  VALUES (@Organization,@CategoryId, @LifeCycleId); "
@@ -52,7 +48,7 @@ namespace OSD.RazorData.Repositories.SysMapper.Tables
                 try
                 {
                     // SELECT * FROM Companies WHERE CompanyId = @Id
-                    var sql = "SELECT * FROM [dbo].[OU] (NO-LOCK) WHERE OuId = @OuId";
+                    var sql = "SELECT * FROM [dbo].[OU] (NOLOCK) WHERE OuId = @OuId";
                     return cnn.Query<Ou>(sql, new { @OuId = id }).Single();
                 } catch (Exception e)
                 {
@@ -67,7 +63,7 @@ namespace OSD.RazorData.Repositories.SysMapper.Tables
                 try
                 {
                     // SELECT * FROM Companies WHERE CompanyId = @Id
-                    var sql = "SELECT * FROM [dbo].[OU] (NO-LOCK) WHERE OuId = @OuId";
+                    var sql = "SELECT * FROM [dbo].[OU] (NOLOCK) WHERE OuId = @OuId";
                     return cnn.Query<Ou>(sql, new { @OuId = v.OuId }).Single();
                 } catch (Exception e ) { throw e; }
 
@@ -82,7 +78,7 @@ namespace OSD.RazorData.Repositories.SysMapper.Tables
                 try
                 {
                     //   SELECT * FROM Companies
-                    var sql = "SELECT * FROM [dbo].[OU] (NO-LOCK) ";
+                    var sql = "SELECT * FROM [dbo].[OU] (NOLOCK) ";
                     return cnn.Query<Ou>(sql).ToList();
                 } catch (Exception e) { throw e; }
             }
@@ -94,7 +90,7 @@ namespace OSD.RazorData.Repositories.SysMapper.Tables
                 try
                 {
                     //   SELECT * FROM Companies
-                    var sql = "SELECT * FROM [dbo].[OU] (NO-LOCK)";
+                    var sql = "SELECT * FROM [dbo].[OU] (NOLOCK)";
                     IEnumerable<Ou> results = await cnn.QueryAsync<Ou>(sql);
                     return results.ToList();
                 }catch (Exception e) { throw e; }
@@ -106,7 +102,7 @@ namespace OSD.RazorData.Repositories.SysMapper.Tables
             {
                 try
                 {
-                    var sql = "SELECT * FROM [dbo].[Ou] (NO-LOCK) WHERE OuId = @searchId  ";
+                    var sql = "SELECT * FROM [dbo].[Ou] (NOLOCK) WHERE OuId = @searchId  ";
                     Console.WriteLine("String: Count: " + searchId);
 
                     IEnumerable<Ou> results = await cnn.QueryAsync<Ou>(sql, new { @searchId = searchId });
@@ -120,7 +116,7 @@ namespace OSD.RazorData.Repositories.SysMapper.Tables
             {
                 try
                 {
-                    var sql = "SELECT * FROM [dbo].[Ou] (NO-LOCK)  WHERE UPPER(Organization)  LIKE CONCAT('%',@SearchString,'%') ";
+                    var sql = "SELECT * FROM [dbo].[Ou] (NOLOCK)  WHERE UPPER(Organization)  LIKE CONCAT('%',@SearchString,'%') ";
                     Console.WriteLine("String: Count: " + searchString.Count() + " String Value: " + searchString);
 
                     IEnumerable<Ou> results = await cnn.QueryAsync<Ou>(sql, new { @SearchString = searchString.ToUpper() });
@@ -134,7 +130,7 @@ namespace OSD.RazorData.Repositories.SysMapper.Tables
             {
                 try
                 {
-                    var sql = "SELECT * FROM [dbo].[Ou] (NO-LOCK) WHERE  (UPPER(Organization)  LIKE CONCAT('%',@SearchString,'%') ) AND LifeCycleId =  @SearchId ";
+                    var sql = "SELECT * FROM [dbo].[Ou] (NOLOCK) WHERE  (UPPER(Organization)  LIKE CONCAT('%',@SearchString,'%') ) AND LifeCycleId =  @SearchId ";
                     Console.WriteLine("String: Count: " + searchString.Count() + " String Value: " + searchString);
 
                     IEnumerable<Ou> results = await cnn.QueryAsync<Ou>(sql, new { @SearchString = searchString.ToUpper(), @SearchId = searchId });

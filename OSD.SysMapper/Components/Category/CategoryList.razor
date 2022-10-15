@@ -69,6 +69,8 @@
         </RadzenDataGrid>
         <RadzenButton Shade="Shade.Darker" Click=ShowOnDeleteDialog Text="Delete Selected Records" ButtonStyle="ButtonStyle.Danger" />
         <RadzenButton Shade="Shade.Darker" Click=ShowUpdateDialog Text="Bulk Update Selected Records" ButtonStyle="ButtonStyle.Danger" />
+    <RadzenButton Shade="Shade.Darker" Click=ShowCreateDialog Text="Add New Category" ButtonStyle="ButtonStyle.Danger" />
+
 
 }
  
@@ -154,11 +156,88 @@
             } else {
                 Console.WriteLine($"Removed item {item.CategoryId}");
                 delcount++;
-                
+
             }
         }
         NavigationManager.NavigateTo("/categoryIndex", true);
-         
+
+    }
+
+
+    async Task ShowCreateDialog()
+    {
+        Category T = new Category();
+        string notice  = string.Empty;
+        var result = await DialogService.OpenAsync("Create Dialog", ds =>
+        @<div>
+            <p Style="margin-bottom: 1rem">Create New Record?</p>
+            
+            <div class="row">
+            <RadzenCard>
+                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Category Name</RadzenText>
+                <RadzenTextBox Placeholder="Enter a unique category name..." @bind-Value=T.Name Class="w-100" />
+            </RadzenCard>
+                <div class="col-md-12">
+                    <LifecycleLOV OnClose="BulkLifeCycleId"  ></LifecycleLOV>
+
+                </div>
+                <div class="col-md-12">
+                    <RadzenButton Text="Ok" ButtonStyle="ButtonStyle.Danger"  Click="() => ds.Close(true)" Style="margin-bottom: 10px; width: 150px" />
+                    <RadzenButton Text="Cancel" Click="() => ds.Close(false)" ButtonStyle="ButtonStyle.Dark" Style="margin-bottom: 10px; width: 150px" />
+                    <RadzenButton Text="Refresh" Click="(() => { submitted = false; ds.Refresh(); })" ButtonStyle="ButtonStyle.Info" Style="margin-bottom: 10px; width: 150px" />
+                
+                </div>
+            </div>
+        </div>
+    );
+        if(result) 
+        {
+            try {
+
+                var u  = new Category();
+                u.Name = T.Name;
+                u.LifeCycleId = bulkLifeCycleId;
+                var hasname = CategoryRepository.NameExists(T.Name);
+                if (hasname < 1 ){
+                    await CategoryRepository.AddAsync(u);
+                    Console.WriteLine($"Updated Item {T.Name} with {u.LifeCycleId} in ShowUpdateDialog");
+                    NavigationManager.NavigateTo("/categoryIndex", true);
+                } else {
+                    notice = "Name found - Enter Unique Name";
+                    await ShowError(notice);
+
+                }
+
+
+
+            } 
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+        Console.WriteLine($"ShowEditDialog Dialog result: {result}");
+    }
+    async Task ShowError(string T)
+    {
+        var result = await DialogService.OpenAsync("Alert Dialog", ds =>
+    @<div class="row alert alert-primary" role="alert">
+        <RadzenCard>
+            <RadzenTextBox ReadOnly  @bind-Value=T Class="w-100" />
+        </RadzenCard>
+
+        <div class="col-md-12">
+            <RadzenButton Text="Ok" ButtonStyle="ButtonStyle.Danger"  Click="() => ds.Close(true)" Style="margin-bottom: 10px; width: 150px" />
+            </div></div>
+    );
+        if (result)
+        {
+            try
+            {
+                await ShowCreateDialog();
+            }
+            catch (Exception e) { throw e; }
+        }
     }
      async Task ShowEditDialog(VCategory T)
     {

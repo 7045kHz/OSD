@@ -92,7 +92,7 @@ namespace OSD.RazorData.Repositories.SysMapper.Tables
                 using (var cnn = _context.CreateConnection())
                 {
                     // SELECT * FROM Companies WHERE CompanyId = @Id
-                    var sql = "SELECT * FROM [dbo].[Category] (NO-LOCK) WHERE CategoryId = @CategoryId";
+                    var sql = "SELECT * FROM [dbo].[Category] (NOLOCK) WHERE CategoryId = @CategoryId";
                     return cnn.Query<Category>(sql, new { @CategoryId = id }).Single();
                 }
             }
@@ -112,7 +112,7 @@ namespace OSD.RazorData.Repositories.SysMapper.Tables
                 {
                     // SELECT * FROM Companies WHERE CompanyId = @Id
                     Console.WriteLine($"FindAsync id = {id}");
-                    var sql = "SELECT * FROM [dbo].[Category] (NO-LOCK) WHERE CategoryId = @CategoryId";
+                    var sql = "SELECT * FROM [dbo].[Category] (NOLOCK) WHERE CategoryId = @CategoryId";
                     var r = await cnn.QueryAsync<Category>(sql, new { @CategoryId = id });
                     Console.WriteLine($"FindAsync return = {r.Single()}");
                     return r.Single();
@@ -160,7 +160,7 @@ namespace OSD.RazorData.Repositories.SysMapper.Tables
                 using (var cnn = _context.CreateConnection())
                 {
                     //   SELECT * FROM Companies
-                    var sql = "SELECT * FROM [dbo].[Category] (NO-LOCK) ";
+                    var sql = "SELECT * FROM [dbo].[Category] (NOLOCK) ";
                     return cnn.Query<Category>(sql).ToList();
                 }
             }
@@ -178,7 +178,7 @@ namespace OSD.RazorData.Repositories.SysMapper.Tables
                 using (var cnn = _context.CreateConnection())
                 {
                     //   SELECT * FROM Companies
-                    var sql = "SELECT * FROM [dbo].[Category] (NO-LOCK)";
+                    var sql = "SELECT * FROM [dbo].[Category] (NOLOCK)";
                     IEnumerable<Category> results = await cnn.QueryAsync<Category>(sql);
                     return results.ToList();
                 }
@@ -196,7 +196,7 @@ namespace OSD.RazorData.Repositories.SysMapper.Tables
 
                 using (var cnn = _context.CreateConnection())
                 {
-                    IEnumerable<Category> list = await cnn.QueryAsync<Category>($"select * from [dbo].[Category] (NO-LOCK) ORDER BY {orderBy} {direction} OFFSET {skip} ROWS FETCH NEXT {take} ROWS ONLY; ", null, commandType: CommandType.Text);
+                    IEnumerable<Category> list = await cnn.QueryAsync<Category>($"select * from [dbo].[Category] (NOLOCK) ORDER BY {orderBy} {direction} OFFSET {skip} ROWS FETCH NEXT {take} ROWS ONLY; ", null, commandType: CommandType.Text);
                     return list.ToList();
                 }
             }
@@ -212,7 +212,7 @@ namespace OSD.RazorData.Repositories.SysMapper.Tables
             {
                 using (var cnn = _context.CreateConnection())
                 {
-                    var sql = "SELECT * FROM [dbo].[Category] (NO-LOCK) WHERE LifeCycleId = @searchId  ";
+                    var sql = "SELECT * FROM [dbo].[Category] (NOLOCK) WHERE LifeCycleId = @searchId  ";
                     Console.WriteLine("String: Count: " + searchId);
 
                     IEnumerable<Category> results = await cnn.QueryAsync<Category>(sql, new { @searchId = searchId });
@@ -230,7 +230,7 @@ namespace OSD.RazorData.Repositories.SysMapper.Tables
             {
                 using (var cnn = _context.CreateConnection())
                 {
-                    var sql = "SELECT * FROM [dbo].[Category] (NO-LOCK)  WHERE UPPER(Name)  LIKE CONCAT('%',@SearchString,'%')  ";
+                    var sql = "SELECT * FROM [dbo].[Category] (NOLOCK)  WHERE UPPER(Name)  LIKE CONCAT('%',@SearchString,'%')  ";
                     Console.WriteLine("String: Count: " + searchString.Count() + " String Value: " + searchString);
 
                     IEnumerable<Category> results = await cnn.QueryAsync<Category>(sql, new { @SearchString = searchString.ToUpper() });
@@ -248,7 +248,7 @@ namespace OSD.RazorData.Repositories.SysMapper.Tables
             {
                 using (var cnn = _context.CreateConnection())
                 {
-                    var sql = "SELECT * FROM [dbo].[Category] (NO-LOCK) WHERE UPPER(Name)  LIKE CONCAT('%',@SearchString,'%') AND LifeCycleId =  @SearchId ";
+                    var sql = "SELECT * FROM [dbo].[Category] (NOLOCK) WHERE UPPER(Name)  LIKE CONCAT('%',@SearchString,'%') AND LifeCycleId =  @SearchId ";
                     Console.WriteLine("String: Count: " + searchString.Count() + " String Value: " + searchString);
 
                     IEnumerable<Category> results = await cnn.QueryAsync<Category>(sql, new { @SearchString = searchString.ToUpper(), @SearchId = searchId });

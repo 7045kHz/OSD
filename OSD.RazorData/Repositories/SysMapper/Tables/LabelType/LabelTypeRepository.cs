@@ -51,7 +51,7 @@ namespace OSD.RazorData.Repositories.SysMapper.Tables
                 try
                 {
                     // SELECT * FROM Companies WHERE CompanyId = @Id
-                    var sql = "SELECT * FROM [dbo].[LabelType] (NO-LOCK) WHERE LabelTypeId = @LabelTypeId";
+                    var sql = "SELECT * FROM [dbo].[LabelType] (NOLOCK) WHERE LabelTypeId = @LabelTypeId";
                     return cnn.Query<LabelType>(sql, new { @LabelTypeId = id }).Single();
                 }
                 catch (Exception e) { throw e; }
@@ -67,7 +67,7 @@ namespace OSD.RazorData.Repositories.SysMapper.Tables
                 try
                 {
                     //   SELECT * FROM Companies
-                    var sql = "SELECT * FROM [dbo].[LabelType] (NO-LOCK)";
+                    var sql = "SELECT * FROM [dbo].[LabelType] (NOLOCK)";
                     return cnn.Query<LabelType>(sql).ToList();
                 }
                 catch (Exception e) { throw e; }
