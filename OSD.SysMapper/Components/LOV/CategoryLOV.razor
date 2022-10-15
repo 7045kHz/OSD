@@ -1,0 +1,36 @@
+﻿@inject ICategoryRepository CategoryRepository
+@inject NavigationManager NavigationManager
+
+   <div class="form-group row">
+            <div class="col-md-6 p-3">
+                <RadzenCard>
+                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Select Category</RadzenText>
+                    <RadzenDropDown AllowClear="true" TValue="int" Class="w-100"
+                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                            Data=@Categories TextProperty="Name" ValueProperty="CategoryId"
+                                   Change=@(args => OnChange(args)) />
+
+                </RadzenCard>
+            </div>
+    </div>
+ 
+@code {
+  
+    [Parameter] public EventCallback<int> OnClose { get; set; }
+    public List<Category> Categories { get; set; } = new List<Category>();
+
+    private int bulkCategoryId { get; set; } = -1;
+
+    protected async override Task OnInitializedAsync()
+    {
+        Categories =  (await CategoryRepository.GetAllAsync()).ToList();
+    }
+   
+    private Task OnChange(object value)
+    {
+        bulkCategoryId = (int)value;
+        return OnClose.InvokeAsync(bulkCategoryId);
+    }
+     
+}
+ 
